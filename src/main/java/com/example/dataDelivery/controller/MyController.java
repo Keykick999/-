@@ -1,15 +1,16 @@
 package com.example.dataDelivery.controller;//package com.example.jpaPlease.controller;
 
+import com.example.dataDelivery.entity.Comment;
 import com.example.dataDelivery.entity.Content;
 import com.example.dataDelivery.repository.MyRepository;
 import com.example.dataDelivery.entity.Member;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,12 +19,14 @@ import java.util.Optional;
 public class MyController {
     private final MyRepository contentRepository;
     private final MyRepository memberRepository;
+    private final MyRepository commentRepository;
     private Member logined = null;
 
     @Autowired
-    public MyController( MyRepository contentRepository,MyRepository memberRepository) {
+    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository) {
         this.contentRepository = contentRepository;
         this.memberRepository = memberRepository;
+        this.commentRepository = commentRepository;
     }
 
 
@@ -57,18 +60,31 @@ public class MyController {
     }
 
 
-    // 단일 조회
+    // 게시글 상세 페이지
     @GetMapping("/details/{id}")
     public String showDetails(@PathVariable Long id, Model model) {
-        Optional<Content> target = contentRepository.findById(id);
-        if (target.isPresent()) {
-            model.addAttribute("content", target.get());
+        Optional<Content> findContent = contentRepository.findById(id);
+        Optional<ArrayList<Comment>> findComments = commentRepository.findByContentId(id);
+        if (findContent.isPresent()) {
+            model.addAttribute("content", findContent.get());
+            model.addAttribute("comments", findComments.get()); //이거 어떻게????
             return "detail";
         } else {
             // Handle the case where the content is not found
             // You can add an attribute to show an error message or redirect to a custom error page
             return "redirect:/content-not-found";
         }
+    }
+
+
+    //댓글 작성
+    @PostMapping("/comments/add")
+    public String addComments(@ModelAttribute("newComment") Comment newComment,
+                              @RequestParam("contentId") Long contentId) {
+            newComment.setContentId(contentId);
+            newComment.setWriter(logined.getName());
+            commentRepository.save(newComment);
+            return "redirect:/details/" + contentId;
     }
 
 

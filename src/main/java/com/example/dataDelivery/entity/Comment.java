@@ -1,18 +1,27 @@
 package com.example.dataDelivery.entity;
 
-import java.util.Date;
+import com.example.dataDelivery.temporary.IdGenerator;
+
+import java.sql.Date;
 
 public class Comment {
-    private Long id;  //회원 아이디
-    private String author;
+    private Long id; // pk
+    private Long contentId;
+    private String writer;
     private String text;
-    private Date date;
+    private Date dates;
 
-    public Comment(Long id, String author, String text, Date date) {
+    public Comment() {
+        this.id = IdGenerator.generatedRandomLong();
+        this.dates = new Date(System.currentTimeMillis());
+    }
+
+    public Comment(Long id, Long contentId, String writer, String text, Date dates) {
         this.id = id;
-        this.author = author;
+        this.contentId = contentId;
+        this.writer = writer;
         this.text = text;
-        this.date = date;
+        this.dates = dates;
     }
 
     public Long getId() {
@@ -23,12 +32,20 @@ public class Comment {
         this.id = id;
     }
 
-    public String getAuthor() {
-        return author;
+    public Long getContentId() {
+        return contentId;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setContentId(Long contentId) {
+        this.contentId = contentId;
+    }
+
+    public String getWriter() {
+        return writer;
+    }
+
+    public void setWriter(String writer) {
+        this.writer = writer;
     }
 
     public String getText() {
@@ -39,21 +56,23 @@ public class Comment {
         this.text = text;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDates() {
+        return dates;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDates(Date dates) {
+        this.dates = dates;
     }
+
 
     @Override
     public String toString() {
         return "Comment{" +
-                "id='" + id + '\'' +
-                ", author='" + author + '\'' +
+                "id=" + id +
+                ", contentId=" + contentId +
+                ", writer='" + writer + '\'' +
                 ", text='" + text + '\'' +
-                ", date=" + date +
+                ", dates=" + dates +
                 '}';
     }
 }

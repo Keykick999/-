@@ -8,7 +8,26 @@
 <body>
 <h1 th:text="${content.title}">게시글 제목</h1>
 <p th:text="${content.substance}">게시글 내용</p>
-<!-- 돌아가기 버튼 -->
-<a href="/list">목록으로 돌아가기</a>
+
+<!-- Comment Section -->
+<div class="comments-section">
+    <h3>Comments</h3>
+    <div th:each="comment : ${comments}"> <!-- Assuming comments are provided as a list in the model -->
+        <div class="comment" th:id="'comment-' + ${comment.id}">
+            <strong th:text="${comment.writer}">작성자</strong> <!-- Updated to use 'writer' -->
+            <p th:text="${comment.text}">댓글 내용</p>
+            <!-- Date formatting to match the SQL date pattern -->
+            <span th:text="${#dates.format(comment.dates, 'dd/MM/yy')}">작성일</span> <!-- Updated to use 'dates' and removed the time portion -->
+        </div>
+    </div>
+    <!-- Comment Form -->
+    <form action="#" th:action="@{/comments/add}" th:object="${newComment}" method="post"> <!-- Updated the action URL -->
+        <textarea name="text" placeholder="Write a comment..." required></textarea>
+        <input type="hidden" name="contentId" th:value="${content.id}" />
+        <button type="submit">Post Comment</button>
+    </form>
+</div>
+
+<a href="/">목록으로 돌아가기</a>
 </body>
 </html>

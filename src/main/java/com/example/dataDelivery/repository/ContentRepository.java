@@ -1,5 +1,6 @@
 package com.example.dataDelivery.repository;
 
+import com.example.dataDelivery.entity.Comment;
 import com.example.dataDelivery.entity.Content;
 import org.springframework.stereotype.Repository;
 
@@ -176,6 +177,11 @@ public class ContentRepository implements MyRepository<Content,Long>{
         } else{
             return false;
         }
+    }
+
+    @Override
+    public Optional<ArrayList<Comment>> findByContentId(Long id) {
+        return Optional.empty();
     }
 
 

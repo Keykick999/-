@@ -1,70 +1,96 @@
-/* Details Page Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
 h1 {
     font-size: 24px;
-    margin-bottom: 10px;
-    color: #FFFFFF;
+    color: #333;
+    padding: 16px;
+    margin: 0;
 }
 
 p {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #D3D3D3;
-    background-color: #333;
-    padding: 15px;
-    border-radius: 5px;
+    color: #666;
+    padding: 0 16px;
 }
 
-a {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 15px;
-    background-color: #4e9af1;
-    color: white;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s;
+.comments-section {
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+    padding: 16px;
+    max-width: 800px; /* Adjust the max-width as needed */
+    margin: auto; /* This centers the comments section */
 }
 
-a:hover {
-    background-color: #87ceeb;
+.comment {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 12px 0;
 }
 
-/* Additional global styles */
-body {
-    background-color: #121212; /* Dark background for the body */
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-    padding: 20px;
+.comment:last-child {
+    border-bottom: none;
 }
 
-/* Reusing the button styles from the list page */
+.comment strong {
+    font-size: 14px;
+    color: #333;
+    display: block;
+}
+
+.comment p {
+    font-size: 14px;
+    color: #333;
+    margin: 8px 0;
+}
+
+.comment span {
+    font-size: 12px;
+    color: #999;
+}
+
+form {
+    max-width: 800px;
+    margin: auto;
+    padding: 16px;
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+}
+
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #d0d0d0;
+    border-radius: 2px;
+}
+
 button {
-    background-color: #333;
-    color: #fff;
+    background-color: #065fd4;
+    color: white;
     border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 5px;
+    padding: 10px 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #555;
+    background-color: #0d4ea2;
 }
 
-/* Ensuring consistency in the logout button style */
-.logout-button {
-    background-color: #d9534f;
-    border-color: #d43f3a;
+a {
+    display: block;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+    color: #065fd4;
+    margin-top: 16px;
 }
 
-.logout-button:hover {
-    background-color: #c9302c;
-    border-color: #ac2925;
-}
-
-/* Form styles for consistency */
-form {
-    display: inline;
+a:hover {
+    text-decoration: underline;
 }

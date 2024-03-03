@@ -1,5 +1,6 @@
 package com.example.dataDelivery.repository;
 
+import com.example.dataDelivery.entity.Comment;
 import com.example.dataDelivery.entity.Content;
 import com.example.dataDelivery.entity.Member;
 import org.springframework.stereotype.Repository;
@@ -183,6 +184,11 @@ public class MemberRepository implements MyRepository<Member,String>{
         } else{
             return false;
         }
+    }
+
+    @Override
+    public Optional<ArrayList<Comment>> findByContentId(Long id) {
+        return Optional.empty();
     }
 
 
