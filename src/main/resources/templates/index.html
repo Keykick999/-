@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 목록</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<form action="/logout" method="post">
+    <button type="submit" class="logout-button">로그아웃</button>
+</form>
+<h1>게시글 목록</h1>
+<div th:each="content : ${contents}">
+    <div class="content-item">
+        <!-- 제목 클릭 시, 세부 페이지로 이동 -->
+        <h2><a th:href="@{/details/{id}(id=${content.id})}" th:text="${content.title}">제목</a></h2>
+        <!-- 수정 버튼 -->
+        <form th:action="@{/edit/{id}(id=${content.id})}" method="get">
+            <button type="submit">수정</button>
+        </form>
+        <!-- 삭제 버튼 -->
+        <form th:action="@{/delete/{id}(id=${content.id})}" method="post">
+            <input type="hidden" name="_method" value="delete" />
+            <button type="submit">삭제</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

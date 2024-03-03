@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>제출 결과</title>
+</head>
+<body>
+<h1>제출 완료</h1>
+<p>다음 정보가 성공적으로 제출되었습니다:</p>
+<div>
+    <strong>제목:</strong> <span th:text="${content.title}">제목 플레이스홀더</span>
+</div>
+<div>
+    <strong>내용:</strong> <span th:text="${content.substance}">내용 플레이스홀더</span>
+</div>
+<a href="/home">홈으로 돌아가기</a>
+</body>
+</html>

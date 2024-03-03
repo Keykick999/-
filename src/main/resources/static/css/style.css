@@ -1,0 +1,89 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Layout */
+.content-item {
+    background-color: #1e1e1e;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.content-item h2 a {
+    color: #4e9af1;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.content-item h2 a:hover {
+    color: #87ceeb;
+}
+
+/* Button styles */
+button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Logout Button */
+.logout-button {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.logout-button:hover {
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+
+/* Form styles */
+form {
+    display: inline;
+}
+
+/* Back link */
+a {
+    color: #4e9af1;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header styles */
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Specific to the details page */
+h1.title {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+p.content {
+    margin-bottom: 20px;
+}

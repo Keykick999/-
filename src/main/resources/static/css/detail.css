@@ -1,0 +1,70 @@
+/* Details Page Styles */
+h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #D3D3D3;
+    background-color: #333;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #4e9af1;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+a:hover {
+    background-color: #87ceeb;
+}
+
+/* Additional global styles */
+body {
+    background-color: #121212; /* Dark background for the body */
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Reusing the button styles from the list page */
+button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Ensuring consistency in the logout button style */
+.logout-button {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+.logout-button:hover {
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+
+/* Form styles for consistency */
+form {
+    display: inline;
+}

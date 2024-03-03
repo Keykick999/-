@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>콘텐츠 입력 폼</title>
+    <link rel="stylesheet" href="/css/form.css">
+</head>
+<body>
+<main>
+    <h1>콘텐츠 입력</h1>
+    <form action="/received" method="post" id="contentForm">
+        <fieldset>
+            <legend>콘텐츠 정보</legend>
+            <div class="form-row">
+                <label for="title">제목:</label>
+                <input type="text" id="title" name="title" />
+            </div>
+            <div class="form-row">
+                <label for="substance">내용:</label>
+                <textarea id="substance" name="substance"></textarea>
+            </div>
+            <button type="submit" id="submitBtn">제출</button>
+        </fieldset>
+    </form>
+</main>
+</body>
+</html>
