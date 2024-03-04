@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>댓글 수정</title>
+    <link rel="stylesheet" th:href="@{/css/form.css}">
+</head>
+<body>
+<main>
+    <h1>댓글 수정</h1>
+    <!-- action URL에 contentId를 포함시켜 수정된 댓글을 저장하고 details 페이지로 리다이렉트합니다. -->
+    <form th:action="@{/comments/edit/{contentId}(contentId=${comment.contentId})}" method="post" id="commentForm">
+        <fieldset>
+            <legend>댓글 정보</legend>
+            <div class="form-row">
+                <label for="text">댓글 내용:</label>
+                <textarea id="text" name="text" th:text="${comment.text}"></textarea>
+            </div>
+            <input type="hidden" name="id" th:value="${comment.id}" />
+            <!-- contentId를 hidden input으로 포함시켜 서버로 전송합니다. -->
+            <input type="hidden" name="contentId" th:value="${comment.contentId}" />
+            <button type="submit" id="submitBtn">저장</button>
+        </fieldset>
+    </form>
+</main>
+</body>
+</html>

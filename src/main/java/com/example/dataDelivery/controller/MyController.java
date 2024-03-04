@@ -32,17 +32,21 @@ public class MyController {
 
     @GetMapping("/home")
     public String home(){
-        if(logined == null) {
-            return "redirect:/login";
+        if(logined != null) {
+            return "form";
         }
-        else return "form";
+        else return "redirect:/login";
     }
 
     @PostMapping("/received")
     public String save(Content content, Model model) {
-        contentRepository.save(content);
-        model.addAttribute("content", content);
-        return "redirect:/list";
+        if(logined != null) {
+            contentRepository.save(content);
+            model.addAttribute("content", content);
+            return "redirect:/list";
+        } else{
+            return "redirect:/login";
+        }
     }
 
 
@@ -63,16 +67,21 @@ public class MyController {
     // 게시글 상세 페이지
     @GetMapping("/details/{id}")
     public String showDetails(@PathVariable Long id, Model model) {
-        Optional<Content> findContent = contentRepository.findById(id);
-        Optional<ArrayList<Comment>> findComments = commentRepository.findByContentId(id);
-        if (findContent.isPresent()) {
-            model.addAttribute("content", findContent.get());
-            model.addAttribute("comments", findComments.get()); //이거 어떻게????
-            return "detail";
-        } else {
-            // Handle the case where the content is not found
-            // You can add an attribute to show an error message or redirect to a custom error page
-            return "redirect:/content-not-found";
+        if(logined != null) {
+            Optional<Content> findContent = contentRepository.findById(id);
+            Optional<ArrayList<Comment>> findComments = commentRepository.findByContentId(id);
+            if (findContent.isPresent()) {
+                model.addAttribute("content", findContent.get());
+                model.addAttribute("comments", findComments.get()); //이거 어떻게????
+                return "detail";
+            } else {
+                // Handle the case where the content is not found
+                // You can add an attribute to show an error message or redirect to a custom error page
+                return "redirect:/content-not-found";
+            }
+        }
+        else {
+            return "redirect:/login";
         }
     }
 
@@ -81,10 +90,66 @@ public class MyController {
     @PostMapping("/comments/add")
     public String addComments(@ModelAttribute("newComment") Comment newComment,
                               @RequestParam("contentId") Long contentId) {
+        if(logined != null) {
             newComment.setContentId(contentId);
             newComment.setWriter(logined.getName());
             commentRepository.save(newComment);
             return "redirect:/details/" + contentId;
+        } else {
+            return "redirect:/login";
+        }
+    }
+
+
+    //댓글 삭제
+    @PostMapping("/comments/delete/{id}")
+    public String deleteComment(@PathVariable("id") Long commentId,
+                                @RequestParam("contentId") Long contentId) {
+        if(logined != null) {
+            commentRepository.deleteById(commentId);
+            return "redirect:/details/" + contentId;
+        } else{
+            return "redirect:/login";
+        }
+    }
+
+
+    //댓글 수정
+    @GetMapping("/comments/edit/{id}")
+    public String editCommentForm(@PathVariable("id") Long commentId, Model model) {
+        if(logined != null) {
+            Optional<Comment> findComment = commentRepository.findById(commentId);
+            if (findComment.isPresent()) {
+                model.addAttribute("comment", findComment.get());
+                return "edit_comment"; // 댓글 수정 폼의 뷰 이름
+            } else {
+                return "/home"; // 콘텐츠를 찾을 수 없을 때 리다이렉션
+            }
+        } else{
+            return "redirect:/login";
+        }
+    }
+
+
+
+    @PostMapping("/comments/edit/{contentId}")
+    public String editComment(@PathVariable("contentId") Long contentId,
+                              @RequestParam("id") Long commentId,
+                              @RequestParam("text") String text) {
+        if(logined != null) {
+            // 댓글 수정 폼으로 이동하는 로직 구현
+            Optional<Comment> findComment = commentRepository.findById(commentId);
+            if (findComment.isPresent()) {
+                Comment comment = findComment.get();
+                comment.setText(text);
+                commentRepository.update(comment);
+                return "redirect:/details/" + contentId;
+            } else {
+                return "redirect:/content-not-found";
+            }
+        } else{
+            return "redirect:/login";
+        }
     }
 
 
@@ -152,12 +217,8 @@ public class MyController {
 
     @PostMapping("/signup")
     public String sign(Member member){
-        if(member == null) System.out.println("null임");
-        else {
-            System.out.println(member);
-        }
         memberRepository.save(member);
-        return "redirect:/";
+        return "redirect:/login";
     }
 
 
@@ -169,14 +230,13 @@ public class MyController {
     @PostMapping("/login")
     public String login(@RequestParam("id") String id,
                         @RequestParam("password") String password, Model model) {
-        Optional<Member> target = memberRepository.findById(id);
-        if(target.isPresent() && target.get().getPassword().equals(password)){
-            logined = target.get();
-            return "redirect:/home";
-        }
-        else {
-            return "redirect:/login";
-        }
+            Optional<Member> target = memberRepository.findById(id);
+            if (target.isPresent() && target.get().getPassword().equals(password)) {
+                logined = target.get();
+                return "redirect:/home";
+            } else {
+                return "redirect:/login";
+            }
     }
 
 

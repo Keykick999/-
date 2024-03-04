@@ -12,22 +12,33 @@
 <!-- Comment Section -->
 <div class="comments-section">
     <h3>Comments</h3>
-    <div th:each="comment : ${comments}"> <!-- Assuming comments are provided as a list in the model -->
+    <div th:each="comment : ${comments}">
         <div class="comment" th:id="'comment-' + ${comment.id}">
-            <strong th:text="${comment.writer}">작성자</strong> <!-- Updated to use 'writer' -->
+            <strong th:text="${comment.writer}">작성자</strong>
             <p th:text="${comment.text}">댓글 내용</p>
-            <!-- Date formatting to match the SQL date pattern -->
-            <span th:text="${#dates.format(comment.dates, 'dd/MM/yy')}">작성일</span> <!-- Updated to use 'dates' and removed the time portion -->
+            <span th:text="${#dates.format(comment.dates, 'dd/MM/yy')}">작성일</span>
+            <!-- 수정 버튼 -->
+            <form th:action="@{/comments/edit/{id}(id=${comment.id})}" method="get">
+                <button type="submit">수정</button>
+            </form>
+            <!-- 삭제 버튼 -->
+            <form th:action="@{/comments/delete/{id}(id=${comment.id})}" method="post">
+                <input type="hidden" name="_method" value="delete" />
+                <input type="hidden" name="contentId" th:value="${content.id}" />
+                <button type="submit">삭제</button>
+            </form>
+
         </div>
     </div>
-    <!-- Comment Form -->
-    <form action="#" th:action="@{/comments/add}" th:object="${newComment}" method="post"> <!-- Updated the action URL -->
+    <!-- 댓글 작성 폼 -->
+    <form action="#" th:action="@{/comments/add}" th:object="${newComment}" method="post">
         <textarea name="text" placeholder="Write a comment..." required></textarea>
         <input type="hidden" name="contentId" th:value="${content.id}" />
         <button type="submit">Post Comment</button>
     </form>
 </div>
 
-<a href="/">목록으로 돌아가기</a>
+
+<a href="/list">목록으로 돌아가기</a>
 </body>
 </html>

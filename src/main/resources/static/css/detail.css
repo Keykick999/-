@@ -51,6 +51,25 @@ p {
     color: #999;
 }
 
+/* 스타일 추가: 수정 및 삭제 버튼 */
+.comment form {
+    display: inline-block; /* 버튼을 옆으로 배치 */
+    margin-right: 8px; /* 버튼 사이의 간격 */
+}
+
+.comment button {
+    background-color: #f3f3f3;
+    color: #333;
+    text-transform: none; /* 대문자 변환 해제 */
+    letter-spacing: normal; /* 글자 간격 해제 */
+    padding: 5px 8px;
+    font-size: 12px;
+}
+
+.comment button:hover {
+    background-color: #e0e0e0;
+}
+
 form {
     max-width: 800px;
     margin: auto;
