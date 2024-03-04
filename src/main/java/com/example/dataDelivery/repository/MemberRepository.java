@@ -65,6 +65,33 @@ public class MemberRepository implements MyRepository<Member,String>{
     }
 
 
+    // 이메일로 조회
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        String sql = "SELECT id, name, email, phone, password FROM member WHERE email = ?";
+        Member member = null;
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    member = new Member();
+                    member.setId(rs.getString("id"));
+                    member.setName(rs.getString("name"));
+                    member.setEmail(rs.getString("email"));
+                    member.setPhone(rs.getString("phone"));
+                    member.setPassword(rs.getString("password"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Optional.ofNullable(member);
+    }
+
+
     //전체 조회
     public ArrayList<Member> findAll() {
 

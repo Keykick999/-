@@ -2,31 +2,36 @@ package com.example.dataDelivery.controller;//package com.example.jpaPlease.cont
 
 import com.example.dataDelivery.entity.Comment;
 import com.example.dataDelivery.entity.Content;
+import com.example.dataDelivery.entity.PasswordResetToken;
 import com.example.dataDelivery.repository.MyRepository;
 import com.example.dataDelivery.entity.Member;
+import com.example.dataDelivery.temporary.IdGenerator;
+import email.EmailSender;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class MyController {
     private final MyRepository contentRepository;
     private final MyRepository memberRepository;
     private final MyRepository commentRepository;
+    private final MyRepository passwordResetTokenRepository;
     private Member logined = null;
+    private String verificationCode;
+    private String email;
 
     @Autowired
-    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository) {
+    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository, MyRepository passwordResetTokenRepository) {
         this.contentRepository = contentRepository;
         this.memberRepository = memberRepository;
         this.commentRepository = commentRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
 
@@ -250,18 +255,106 @@ public class MyController {
 
     @GetMapping("/find-id")
     public String findId() {
-        // 여기에 사용자의 이메일 주소를 확인하는 로직을 추가
-        // 인증 문자 생성
-//        String authText = "인증 문자입니다.";
-
-        // 이메일로 인증 문자 보내기
-//        emailService.sendSimpleMessage(email, "아이디 찾기 인증", authText);
-
         return "find-id";
     }
+
+
+    //인증 메일 전송
+    @PostMapping("/find-id")
+    public String sendAuthEmail(String email) {
+        //이메일에 해당하는 회원 존재 여부 확인 코드 추가?
+        Optional<Member> findMember = memberRepository.findByEmail(email);
+        if(findMember.isPresent()) {
+            System.out.println("이메일: " + email);
+            this.email = email;
+            this.verificationCode = IdGenerator.generatedRandomLong().toString();
+            EmailSender.sendEmail(email, "brian7536curry@gmail.com", "haqr ozsi vykg emhx", verificationCode);
+            return "redirect:/find-id";
+        } else{
+            return "/";
+        }
+    }
+
+
+    @PostMapping("/verify-code")
+    public String verifyCode(@RequestParam("verificationCode") String verificationCode,
+                             Model model) {
+        System.out.println("인증 코드: " + verificationCode + " 이메일: " + email);
+        if(verificationCode.equals(this.verificationCode)) {
+            // 인증 코드가 일치하는 경우
+            Optional<Member> findMember = memberRepository.findByEmail(email); // 이메일로 회원 찾기
+            Member member = findMember.get();
+            model.addAttribute("userId", member.getId()); // 모델에 userId 추가
+            return "verificationSuccess"; // 성공 시 페이지
+        } else {
+            return "redirect:/login"; // 실패 시 로그인 페이지로 리다이렉트
+        }
+    }
+
+
 
     @GetMapping("/find-password")
     public String findPassword() {
         return "find-password";
     }
+
+
+    @PostMapping("/request-password-reset")
+    public String sendResetLink(String email, HttpSession session) {
+        Optional<Member> findMember = memberRepository.findByEmail(email);
+        if (findMember.isPresent() && findMember.get().getEmail().equals(email)) {
+            // 비밀번호 재설정 토큰 생성
+            String token = UUID.randomUUID().toString();
+
+            // 토큰과 함께 비밀번호 재설정 링크를 이메일로 전송(이 링크에서 비밀번호 변경)
+            String resetLink = "https://www.yourdomain.com/reset-password?token=" + "\n" + "임시 비밀번호: " + token;
+
+            // 토큰을 데이터베이스에 저장 (여기에서는 토큰의 유효시간도 설정해야 함)
+            PasswordResetToken passwordResetToken = new PasswordResetToken();
+            passwordResetToken.setToken(token);
+            passwordResetToken.setMemberId(findMember.get().getId());
+            passwordResetToken.setExpiryDate(30); // 예를 들어 30분 후 만료
+
+            //DB변경
+            Member member = findMember.get();
+            member.setPassword(token);
+            memberRepository.update(member);     //비밀번호 변경 -> 저장
+            passwordResetTokenRepository.save(passwordResetToken);
+
+            // 이메일 서비스를 통해 재설정 링크를 포함한 이메일 전송
+            EmailSender.sendEmail(email, "brian7536curry@gmail.com", "haqr ozsi vykg emhx", resetLink);
+
+
+            return "passwordResetLinkSent";
+        } else {
+            // 해당 이메일의 사용자가 없는 경우
+            return "userNotFound";
+        }
+    }
+
+
+    //비밀번호 변경
+
+
+//    @GetMapping("yourdomain.com/reset-password?token=")
+//    public String resetPassword() {
+//        return "changePassword";
+//    }
+//
+//
+//
+//    @PostMapping("/changePassword")
+//    public String changePassword(@RequestParam("id") Long id,
+//                                 @RequestParam("newPassword") String newPassword) {
+//        Optional<Member> member = memberRepository.findById(id);
+//        Member findMember = member.get();
+//        findMember.setPassword(newPassword);
+//        memberRepository.save(member);
+//        return "/redirect:/login";
+//    }
+
+
+
+
+
 }

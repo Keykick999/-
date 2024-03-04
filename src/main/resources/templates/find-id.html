@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>아이디 찾기</title>
+    <link rel="stylesheet" href="/css/find-id.css"> <!-- CSS 파일 링크 추가 -->
 </head>
 <body>
 <div class="find-id-container">
@@ -16,6 +17,27 @@
             <button type="submit">인증 이메일 보내기</button>
         </div>
     </form>
+
+    <!-- 인증번호 입력 폼 추가 -->
+    <form action="/verify-code" method="post" class="verify-code-form">
+        <div class="form-field">
+            <label for="verificationCode">인증번호:</label>
+            <input type="text" id="verificationCode" name="verificationCode" required>
+        </div>
+        <!-- 숨겨진 필드로 이메일 값을 추가 -->
+        <input type="hidden" id="emailForVerification" name="email" value="">
+        <div class="form-field">
+            <button type="submit">인증번호 확인</button>
+        </div>
+    </form>
 </div>
+
+<script>
+    // 자바스크립트를 사용하여 이메일 입력 필드의 값을 숨겨진 필드로 복사
+    document.getElementById('email').addEventListener('input', function() {
+        document.getElementById('emailForVerification').value = this.value;
+    });
+</script>
+
 </body>
 </html>

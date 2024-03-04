@@ -1,6 +1,7 @@
 package com.example.dataDelivery.repository;
 
 import com.example.dataDelivery.entity.Comment;
+import com.example.dataDelivery.entity.Member;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -90,6 +91,10 @@ public class CommentRepository implements MyRepository<Comment,Long>{
         return Optional.ofNullable(commentList);
     }
 
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        return Optional.empty();
+    }
 
 
     //전체 조회
