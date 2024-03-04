@@ -354,7 +354,26 @@ public class MyController {
 //    }
 
 
+    //좋아요 개수 조정
+    @PostMapping("/content/like/{id}")
+    public String changeLikesCount(@PathVariable("id") Long id) {
+        Optional<Content> content = contentRepository.findById(id);
+        Content findContent = content.get();
+        findContent.setLikesCount(findContent.getLikesCount() + 1);
+        contentRepository.update(findContent);
+        return "redirect:/details/" + findContent.getId();
+    }
 
 
+
+    //싫어요 개수 조정
+    @PostMapping("/content/dislike/{id}")
+    public String changeDislikesCount(@PathVariable("id") Long id) {
+        Optional<Content> content = contentRepository.findById(id);
+        Content findContent = content.get();
+        findContent.setDislikesCount(findContent.getDislikesCount() + 1);
+        contentRepository.update(findContent);
+        return "redirect:/details/" + findContent.getId();
+    }
 
 }

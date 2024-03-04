@@ -41,7 +41,7 @@ public class ContentRepository implements MyRepository<Content,Long>{
     // 아이디로 조회
     @Override
     public Optional<Content> findById(Long id) {
-        String sql = "SELECT id, title, substance FROM content WHERE id = ?";
+        String sql = "SELECT id, title, substance, likesCount, dislikesCount FROM content WHERE id = ?";
         Content content = null;
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -53,6 +53,8 @@ public class ContentRepository implements MyRepository<Content,Long>{
                     content.setId(rs.getLong("id"));
                     content.setTitle(rs.getString("title"));
                     content.setSubstance(rs.getString("substance"));
+                    content.setLikesCount(rs.getInt("likesCount"));
+                    content.setDislikesCount(rs.getInt("dislikesCount"));
                 }
             }
         } catch (SQLException e) {
@@ -71,7 +73,7 @@ public class ContentRepository implements MyRepository<Content,Long>{
         //DB에서 조회 코드
         try {
             String sql = "" +
-                    "SELECT id, title, substance " +
+                    "SELECT id, title, substance, likesCount, dislikesCount " +
                     "FROM content";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -82,6 +84,8 @@ public class ContentRepository implements MyRepository<Content,Long>{
                 content.setId((rs.getLong("id")));
                 content.setTitle(rs.getString("title"));
                 content.setSubstance(rs.getString("substance"));
+                content.setLikesCount(rs.getInt("likesCount"));
+                content.setDislikesCount(rs.getInt("dislikesCount"));
                 contentList.add(content);
             }
                 rs.close();
@@ -104,13 +108,15 @@ public class ContentRepository implements MyRepository<Content,Long>{
         //DB저장 코드
         try {
             String sql = "" +
-                    " INSERT INTO content(id, title, substance) " +
-                    " VALUES(?, ?, ?)";
+                    " INSERT INTO content(id, title, substance, likesCount, dislikesCount) " +
+                    " VALUES(?, ?, ?, ?, ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, content.getId());
             pstmt.setString(2, content.getTitle());
             pstmt.setString(3, content.getSubstance());
+            pstmt.setInt(4, content.getLikesCount());
+            pstmt.setInt(5, content.getDislikesCount());
 
             savedRows = pstmt.executeUpdate();
 
@@ -196,11 +202,13 @@ public class ContentRepository implements MyRepository<Content,Long>{
     public Optional<Content> update(Content content) {
         Optional<Content> findContent = findById(content.getId());
         if (findContent.isEmpty() != true) {
-            String sql = "UPDATE content SET title=?, substance=? WHERE id=?";
+            String sql = "UPDATE content SET title=?, substance=?, likesCount=?, dislikesCount=? WHERE id=?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, content.getTitle());
                 pstmt.setString(2, content.getSubstance());
-                pstmt.setLong(3, content.getId());
+                pstmt.setInt(3, content.getLikesCount());
+                pstmt.setInt(4, content.getDislikesCount());
+                pstmt.setLong(5, content.getId());
 
                 pstmt.executeUpdate();
             } catch (Exception e) {

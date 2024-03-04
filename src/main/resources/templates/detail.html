@@ -9,6 +9,22 @@
 <h1 th:text="${content.title}">게시글 제목</h1>
 <p th:text="${content.substance}">게시글 내용</p>
 
+
+<!-- Like/Dislike Section -->
+<div class="like-dislike-section">
+    <!-- Like Button -->
+    <form th:action="@{/content/like/{id}(id=${content.id})}" method="post">
+        <button type="submit">좋아요</button>
+        <span th:text="${content.likesCount}">0</span>
+    </form>
+    <!-- Dislike Button -->
+    <form th:action="@{/content/dislike/{id}(id=${content.id})}" method="post">
+        <button type="submit">싫어요</button>
+        <span th:text="${content.dislikesCount}">0</span>
+    </form>
+</div>
+
+
 <!-- Comment Section -->
 <div class="comments-section">
     <h3>Comments</h3>

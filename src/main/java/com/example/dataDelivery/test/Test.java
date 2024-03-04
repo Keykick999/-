@@ -1,20 +1,13 @@
 package com.example.dataDelivery.test;
 
 
-import com.example.dataDelivery.entity.PasswordResetToken;
-import com.example.dataDelivery.repository.PasswordResetTokenRepository;
-import email.EmailSender;
+import com.example.dataDelivery.entity.Content;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Test {
     public static void main(String[] args) {
-        int i = 0;
-        while(i < 5) {
-            String token = UUID.randomUUID().toString();
-            System.out.println(token);
-            i++;
-        }
+        Content content = new Content(1L,"title","subst",10,5);
+        content.setId(2L);
+        System.out.println(content);
     }
 }
