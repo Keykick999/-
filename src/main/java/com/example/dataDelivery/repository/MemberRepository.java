@@ -1,7 +1,6 @@
 package com.example.dataDelivery.repository;
 
 import com.example.dataDelivery.entity.Comment;
-import com.example.dataDelivery.entity.Content;
 import com.example.dataDelivery.entity.Member;
 import org.springframework.stereotype.Repository;
 
@@ -79,7 +78,7 @@ public class MemberRepository implements MyRepository<Member,String>{
                     member = new Member();
                     member.setId(rs.getString("id"));
                     member.setName(rs.getString("name"));
-                    member.setEmail(rs.getString("email"));
+                    member.setEmail(rs.getString("com/example/dataDelivery/email"));
                     member.setPhone(rs.getString("phone"));
                     member.setPassword(rs.getString("password"));
                 }
@@ -110,7 +109,7 @@ public class MemberRepository implements MyRepository<Member,String>{
                 Member member = new Member();
                 member.setId((rs.getString("id")));
                 member.setName(rs.getString("name"));
-                member.setEmail(rs.getString("email"));
+                member.setEmail(rs.getString("com/example/dataDelivery/email"));
                 member.setPhone(rs.getString("phone"));
                 member.setPhone(rs.getString("password"));
                 memberList.add(member);
@@ -214,7 +213,7 @@ public class MemberRepository implements MyRepository<Member,String>{
     }
 
     @Override
-    public Optional<ArrayList<Comment>> findByContentId(Long id) {
+    public Optional<ArrayList<Member>> findByContentId(Long id) {
         return Optional.empty();
     }
 

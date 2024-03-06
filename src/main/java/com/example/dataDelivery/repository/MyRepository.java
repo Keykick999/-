@@ -14,7 +14,7 @@ public interface MyRepository<E,K> {
     public boolean delete(E entity);
     public boolean deleteById(K key);
 
-    Optional<ArrayList<Comment>> findByContentId(Long id);
+    Optional<ArrayList<E>> findByContentId(Long id);
 
     Optional<Member> findByEmail(String email);
 }

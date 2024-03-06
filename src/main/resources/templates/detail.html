@@ -14,11 +14,14 @@
 <div class="like-dislike-section">
     <!-- Like Button -->
     <form th:action="@{/content/like/{id}(id=${content.id})}" method="post">
+        <!-- reaction.id에 해당하는 hidden input 추가. 실제 값은 서버로부터 제공받아야 함. -->
+        <input type="hidden" name="reactionId" th:value="${reactionId}" />
         <button type="submit">좋아요</button>
         <span th:text="${content.likesCount}">0</span>
     </form>
     <!-- Dislike Button -->
     <form th:action="@{/content/dislike/{id}(id=${content.id})}" method="post">
+        <input type="hidden" name="reactionId" th:value="${reactionId}" />
         <button type="submit">싫어요</button>
         <span th:text="${content.dislikesCount}">0</span>
     </form>

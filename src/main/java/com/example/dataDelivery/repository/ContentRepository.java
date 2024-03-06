@@ -187,7 +187,7 @@ public class ContentRepository implements MyRepository<Content,Long>{
     }
 
     @Override
-    public Optional<ArrayList<Comment>> findByContentId(Long id) {
+    public Optional<ArrayList<Content>> findByContentId(Long id) {
         return Optional.empty();
     }
 

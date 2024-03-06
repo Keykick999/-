@@ -1,12 +1,9 @@
 package com.example.dataDelivery.controller;//package com.example.jpaPlease.controller;
 
-import com.example.dataDelivery.entity.Comment;
-import com.example.dataDelivery.entity.Content;
-import com.example.dataDelivery.entity.PasswordResetToken;
+import com.example.dataDelivery.entity.*;
 import com.example.dataDelivery.repository.MyRepository;
-import com.example.dataDelivery.entity.Member;
 import com.example.dataDelivery.temporary.IdGenerator;
-import email.EmailSender;
+import com.example.dataDelivery.email.EmailSender;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +19,18 @@ public class MyController {
     private final MyRepository memberRepository;
     private final MyRepository commentRepository;
     private final MyRepository passwordResetTokenRepository;
+    private final MyRepository reactionRepository;
     private Member logined = null;
     private String verificationCode;
     private String email;
 
     @Autowired
-    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository, MyRepository passwordResetTokenRepository) {
+    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository, MyRepository passwordResetTokenRepository, MyRepository reactionRepository) {
         this.contentRepository = contentRepository;
         this.memberRepository = memberRepository;
         this.commentRepository = commentRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.reactionRepository = reactionRepository;
     }
 
 
@@ -75,13 +74,36 @@ public class MyController {
         if(logined != null) {
             Optional<Content> findContent = contentRepository.findById(id);
             Optional<ArrayList<Comment>> findComments = commentRepository.findByContentId(id);
+            Optional<ArrayList<Reaction>> contentReactions = reactionRepository.findByContentId(id);
+            ArrayList<Reaction> findReactionList = contentReactions.get();
+//            로그인한 회원의 아이디와 같은 리액션 찾기
+            Optional<Reaction> findReaction = Optional.ofNullable(null);
+            for (Reaction reaction : findReactionList) {
+                if(reaction.getMemberId().equals(logined.getId())){
+                    findReaction = Optional.ofNullable(reaction);
+                    break;
+                }
+            }
+
             if (findContent.isPresent()) {
                 model.addAttribute("content", findContent.get());
                 model.addAttribute("comments", findComments.get()); //이거 어떻게????
+                if(findReaction.isPresent()) {
+                    model.addAttribute("reactionId", findReaction.get().getId());
+                }
+                //findReaction == null
+                else if(findReaction.isEmpty()){
+                    Reaction reaction = new Reaction();
+                    reaction.setId(IdGenerator.generatedRandomLong());
+                    reaction.setMemberId(logined.getId());
+                    reaction.setContentId(id);
+                    reaction.setFavor(Favor.NEUTRAL);
+                    reactionRepository.save(reaction);
+                    model.addAttribute("reactionId", reaction.getId());
+
+                }
                 return "detail";
             } else {
-                // Handle the case where the content is not found
-                // You can add an attribute to show an error message or redirect to a custom error page
                 return "redirect:/content-not-found";
             }
         }
@@ -333,47 +355,79 @@ public class MyController {
     }
 
 
-    //비밀번호 변경
-
-
-//    @GetMapping("yourdomain.com/reset-password?token=")
-//    public String resetPassword() {
-//        return "changePassword";
-//    }
-//
-//
-//
-//    @PostMapping("/changePassword")
-//    public String changePassword(@RequestParam("id") Long id,
-//                                 @RequestParam("newPassword") String newPassword) {
-//        Optional<Member> member = memberRepository.findById(id);
-//        Member findMember = member.get();
-//        findMember.setPassword(newPassword);
-//        memberRepository.save(member);
-//        return "/redirect:/login";
-//    }
-
 
     //좋아요 개수 조정
     @PostMapping("/content/like/{id}")
-    public String changeLikesCount(@PathVariable("id") Long id) {
-        Optional<Content> content = contentRepository.findById(id);
-        Content findContent = content.get();
-        findContent.setLikesCount(findContent.getLikesCount() + 1);
-        contentRepository.update(findContent);
-        return "redirect:/details/" + findContent.getId();
+    public String changeLikesCount(@PathVariable("id") Long id,
+                                   @RequestParam("reactionId") Long reactionId) {   //reactionId안들어옴..
+        if(reactionId != null) {
+            //DB에서 Reaction 불러오기
+            Optional<Reaction> reaction = reactionRepository.findById(reactionId); //html 수정해야 (Reaction.id도 넘겨주도록)
+            Reaction findReaction = reaction.get();
+
+            //DB에서 Content 불러오기
+            Optional<Content> content = contentRepository.findById(id);
+            Content findContent = content.get();
+
+            //좋아요 취소
+            if (findReaction.getFavor() == Favor.LIKE) {
+                findReaction.setFavor(Favor.NEUTRAL);
+                findContent.setLikesCount(findContent.getLikesCount() - 1);
+            }
+            //좋아요
+            else {
+                if(findReaction.getFavor() == Favor.DISLIKE) {
+                    findContent.setDislikesCount(findContent.getDislikesCount() - 1);
+                }
+                findReaction.setFavor(Favor.LIKE);
+                findContent.setLikesCount(findContent.getLikesCount() + 1);
+            }
+            //DB업데이트
+            reactionRepository.update(findReaction);
+            contentRepository.update(findContent);
+            return "redirect:/details/" + findContent.getId();
+        } else{
+            System.out.println("null이다");
+            return "redirect:/details/" + id;
+        }
     }
 
 
 
     //싫어요 개수 조정
     @PostMapping("/content/dislike/{id}")
-    public String changeDislikesCount(@PathVariable("id") Long id) {
-        Optional<Content> content = contentRepository.findById(id);
-        Content findContent = content.get();
-        findContent.setDislikesCount(findContent.getDislikesCount() + 1);
-        contentRepository.update(findContent);
-        return "redirect:/details/" + findContent.getId();
+    public String changeDislikesCount(@PathVariable("id") Long id,
+                                      @RequestParam("reactionId") Long reactionId) {
+        if(reactionId != null) {
+            //DB에서 Reaction 불러오기
+            Optional<Reaction> reaction = reactionRepository.findById(reactionId); //html 수정해야 (Reaction.id도 넘겨주도록)
+            Reaction findReaction = reaction.get();
+
+            //DB에서 Content 불러오기
+            Optional<Content> content = contentRepository.findById(id);
+            Content findContent = content.get();
+
+            //싫어요 취소
+            if (findReaction.getFavor() == Favor.DISLIKE) {
+                findReaction.setFavor(Favor.NEUTRAL);
+                findContent.setDislikesCount(findContent.getDislikesCount() - 1);
+            }
+            //싫어요
+            else {
+                if(findReaction.getFavor() == Favor.LIKE) {
+                    findContent.setLikesCount(findContent.getLikesCount() - 1);
+                }
+                findReaction.setFavor(Favor.DISLIKE);
+                findContent.setDislikesCount(findContent.getDislikesCount() + 1);
+            }
+            //DB업데이트
+            reactionRepository.update(findReaction);
+            contentRepository.update(findContent);
+            return "redirect:/details/" + findContent.getId();
+        } else{
+            System.out.println("null이다");
+            return "redirect:/details/" + id;
+        }
     }
 
 }

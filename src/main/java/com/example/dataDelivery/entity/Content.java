@@ -7,7 +7,6 @@ import com.example.dataDelivery.temporary.IdGenerator;
 public class Content {
     private Long id;
     private String title;
-
     private String substance;
     private int likesCount = 0;
     private int dislikesCount = 0;
