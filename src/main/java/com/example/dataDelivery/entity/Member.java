@@ -1,8 +1,6 @@
 package com.example.dataDelivery.entity;
 
 
-import com.example.dataDelivery.temporary.IdGenerator;
-
 import java.util.Objects;
 
 public class Member {

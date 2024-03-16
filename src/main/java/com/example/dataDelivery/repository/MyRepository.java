@@ -1,6 +1,7 @@
 package com.example.dataDelivery.repository;
 
 import com.example.dataDelivery.entity.Comment;
+import com.example.dataDelivery.entity.CommentReaction;
 import com.example.dataDelivery.entity.Member;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public interface MyRepository<E,K> {
     public boolean deleteById(K key);
 
     Optional<ArrayList<E>> findByContentId(Long id);
+
+    Optional<ArrayList<CommentReaction>> findByCommentId(Long commentId);
 
     Optional<Member> findByEmail(String email);
 }

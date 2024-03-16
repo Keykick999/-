@@ -1,89 +1,107 @@
-/* General Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #121212;
-    color: #ffffff;
-    line-height: 1.6;
-    padding: 20px;
+    background-color: #e9ecef; /* 배경색을 조금 더 진한 회색으로 변경 */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Layout */
+.container {
+    width: 80%;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.logout-form {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.logout-button {
+    padding: 8px 16px;
+    background-color: #dc3545; /* 로그아웃 버튼 색상 변경 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.content-list {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 상자 그림자 추가 */
+}
+
 .content-item {
-    background-color: #1e1e1e;
-    margin-bottom: 10px;
+    background: #ffffff;
     padding: 15px;
-    border-radius: 5px;
+    border-bottom: 1px solid #dee2e6; /* 구분선 색상을 조금 더 연하게 변경 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 2px; /* 각 모서리 둥글기를 줄임 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 각 게시글에 그림자 추가 */
 }
 
-.content-item h2 a {
-    color: #4e9af1;
+.content-item:last-child {
+    border-bottom: none;
+}
+
+h2 {
+    margin: 0;
+    font-size: 18px; /* 제목 폰트 크기를 약간 줄임 */
+}
+
+h2 a {
+    color: #007bff;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.content-item h2 a:hover {
-    color: #87ceeb;
+h2 a:hover {
+    color: #0056b3;
 }
 
-/* Button styles */
-button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #555;
-}
-
-/* Logout Button */
-.logout-button {
-    background-color: #d9534f;
-    border-color: #d43f3a;
-}
-
-.logout-button:hover {
-    background-color: #c9302c;
-    border-color: #ac2925;
-}
-
-/* Form styles */
-form {
+.buttons form {
     display: inline;
 }
 
-/* Back link */
-a {
-    color: #4e9af1;
-    text-decoration: none;
+.edit-button,
+.delete-button {
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-a:hover {
-    text-decoration: underline;
+.edit-button {
+    background-color: #ffc107; /* 수정 버튼 색상 변경 */
+    color: white;
 }
 
-/* Header styles */
-h1 {
-    margin-bottom: 20px;
+.edit-button:hover {
+    background-color: #e0a800;
 }
 
-/* Specific to the details page */
-h1.title {
-    font-size: 2em;
-    margin-bottom: 10px;
+.delete-button {
+    background-color: #dc3545; /* 삭제 버튼 색상 변경 */
+    color: white;
 }
 
-p.content {
-    margin-bottom: 20px;
+.delete-button:hover {
+    background-color: #c82333;
 }

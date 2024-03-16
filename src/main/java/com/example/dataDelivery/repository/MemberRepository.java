@@ -1,6 +1,7 @@
 package com.example.dataDelivery.repository;
 
 import com.example.dataDelivery.entity.Comment;
+import com.example.dataDelivery.entity.CommentReaction;
 import com.example.dataDelivery.entity.Member;
 import org.springframework.stereotype.Repository;
 
@@ -214,6 +215,11 @@ public class MemberRepository implements MyRepository<Member,String>{
 
     @Override
     public Optional<ArrayList<Member>> findByContentId(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ArrayList<CommentReaction>> findByCommentId(Long commentId) {
         return Optional.empty();
     }
 

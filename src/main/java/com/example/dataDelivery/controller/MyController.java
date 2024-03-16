@@ -1,6 +1,8 @@
 package com.example.dataDelivery.controller;//package com.example.jpaPlease.controller;
 
+import com.example.dataDelivery.email.EmailSenderTask;
 import com.example.dataDelivery.entity.*;
+import com.example.dataDelivery.repository.CommentRepository;
 import com.example.dataDelivery.repository.MyRepository;
 import com.example.dataDelivery.temporary.IdGenerator;
 import com.example.dataDelivery.email.EmailSender;
@@ -20,17 +22,19 @@ public class MyController {
     private final MyRepository commentRepository;
     private final MyRepository passwordResetTokenRepository;
     private final MyRepository reactionRepository;
+    private final MyRepository commentReactionRepository;
     private Member logined = null;
     private String verificationCode;
     private String email;
 
     @Autowired
-    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository, MyRepository passwordResetTokenRepository, MyRepository reactionRepository) {
+    public MyController(MyRepository contentRepository, MyRepository memberRepository, MyRepository commentRepository, MyRepository passwordResetTokenRepository, MyRepository reactionRepository, MyRepository commentReactionRepository) {
         this.contentRepository = contentRepository;
         this.memberRepository = memberRepository;
         this.commentRepository = commentRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.reactionRepository = reactionRepository;
+        this.commentReactionRepository = commentReactionRepository;
     }
 
 
@@ -74,25 +78,51 @@ public class MyController {
         if(logined != null) {
             Optional<Content> findContent = contentRepository.findById(id);
             Optional<ArrayList<Comment>> findComments = commentRepository.findByContentId(id);
-            Optional<ArrayList<Reaction>> contentReactions = reactionRepository.findByContentId(id);
-            ArrayList<Reaction> findReactionList = contentReactions.get();
-//            로그인한 회원의 아이디와 같은 리액션 찾기
-            Optional<Reaction> findReaction = Optional.ofNullable(null);
-            for (Reaction reaction : findReactionList) {
-                if(reaction.getMemberId().equals(logined.getId())){
-                    findReaction = Optional.ofNullable(reaction);
-                    break;
+            Optional<ArrayList<Reaction>> contentReactionsOptional = reactionRepository.findByContentId(id);
+            Optional<ArrayList<CommentReaction>> commentReactionsOptional  = commentReactionRepository.findByContentId(id);
+
+
+
+            Reaction findReaction = new Reaction(null,null,null,null);
+            List<CommentReaction> findCommentReactionList = new ArrayList<>(); //회원의 댓글 반응만 담음
+
+
+//           로그인한 회원의 아이디와 같은 리액션 찾기
+            commentReactionsOptional.ifPresent(commentReactions  -> {
+                commentReactions.stream()
+                        // memberId가 logined와 같은 객체만 필터링합니다.
+                        .filter(commentReaction -> commentReaction.getMemberId().equals(logined.getId()))
+                        // 필터링된 객체를 새로운 리스트에 추가합니다.
+                        .forEach(findCommentReactionList::add);
+            });
+
+
+
+            contentReactionsOptional.ifPresent(reactions -> {
+                Optional<Reaction> foundReaction =  reactions.stream()
+                        .filter(reaction -> reaction.getMemberId().equals(logined.getId()))
+                        .findFirst();
+
+                if (foundReaction.isPresent()) {
+                    findReaction.setId(foundReaction.get().getId());
+                    findReaction.setMemberId(foundReaction.get().getMemberId());
+                    findReaction.setFavor(foundReaction.get().getFavor());
                 }
-            }
+            });
+
+
 
             if (findContent.isPresent()) {
                 model.addAttribute("content", findContent.get());
                 model.addAttribute("comments", findComments.get()); //이거 어떻게????
-                if(findReaction.isPresent()) {
-                    model.addAttribute("reactionId", findReaction.get().getId());
+
+
+                //이 부분 고쳤으면...
+                if(findReaction.getId() != null) {
+                    model.addAttribute("reactionId", findReaction.getId());
                 }
                 //findReaction == null
-                else if(findReaction.isEmpty()){
+                else {
                     Reaction reaction = new Reaction();
                     reaction.setId(IdGenerator.generatedRandomLong());
                     reaction.setMemberId(logined.getId());
@@ -100,8 +130,11 @@ public class MyController {
                     reaction.setFavor(Favor.NEUTRAL);
                     reactionRepository.save(reaction);
                     model.addAttribute("reactionId", reaction.getId());
-
                 }
+
+
+                //commentReaction Model에 업데이트
+                    model.addAttribute("commentReactions", findCommentReactionList);
                 return "detail";
             } else {
                 return "redirect:/content-not-found";
@@ -290,7 +323,11 @@ public class MyController {
             System.out.println("이메일: " + email);
             this.email = email;
             this.verificationCode = IdGenerator.generatedRandomLong().toString();
-            EmailSender.sendEmail(email, "brian7536curry@gmail.com", "haqr ozsi vykg emhx", verificationCode);
+
+            EmailSender emailSender = new EmailSender();
+            EmailSenderTask task = new EmailSenderTask(email,"brian7536curry@gmail.com", "haqr ozsi vykg emhx", verificationCode,emailSender);
+            new Thread(task).start();
+
             return "redirect:/find-id";
         } else{
             return "/";
@@ -430,4 +467,138 @@ public class MyController {
         }
     }
 
+
+
+    //댓글 좋아요 요청
+    @PostMapping("/content/{contentId}/comments/like/{commentId}")
+    public String changeCommentLikesCount(@PathVariable("contentId") Long contentId,
+                                   @PathVariable("commentId") Long commentId) {   //reactionId안들어옴..
+
+
+        Optional<ArrayList<CommentReaction>> commentReactionOptional = commentReactionRepository.findByCommentId(commentId);
+        CommentReaction findCommentReaction = new CommentReaction(null,null,null,null,null);
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+
+
+        commentReactionOptional.ifPresent(reactions -> {
+            Optional<CommentReaction> foundReaction =  reactions.stream()
+                    .filter(reaction -> reaction.getMemberId().equals(logined.getId()))
+                    .findFirst();
+
+            if (foundReaction.isPresent()) {
+                findCommentReaction.setId(foundReaction.get().getId());
+                findCommentReaction.setMemberId(foundReaction.get().getMemberId());
+                findCommentReaction.setCommentId(foundReaction.get().getCommentId());
+                findCommentReaction.setContentId(foundReaction.get().getContentId());
+                findCommentReaction.setFavor(foundReaction.get().getFavor());
+            }
+        });
+
+
+
+
+
+
+        if(findCommentReaction.getId() != null) {
+            //좋아요 취소
+            if (findCommentReaction.getFavor() == Favor.LIKE) {
+                findCommentReaction.setFavor(Favor.NEUTRAL);
+                findComment.get().setLikesCount(findComment.get().getLikesCount() - 1);
+            }
+            //좋아요
+            else {
+                //싫어요 -> 좋아요
+                if(findCommentReaction.getFavor() == Favor.DISLIKE) {
+                    findComment.get().setDislikesCount(findComment.get().getDislikesCount() - 1);
+                }
+                findCommentReaction.setFavor(Favor.LIKE);
+                findComment.get().setLikesCount(findComment.get().getLikesCount() + 1);
+            }
+
+
+            //DB업데이트
+            commentReactionRepository.update(findCommentReaction);
+            commentRepository.update(findComment.get());
+            return "redirect:/details/" + contentId;
+            }
+        else{
+                //객체 생성
+                CommentReaction commentReaction = new CommentReaction(logined.getId(),commentId,Favor.LIKE,contentId);
+                Comment comment = findComment.get();
+                comment.setLikesCount(comment.getLikesCount() + 1);
+
+                commentRepository.update(comment);
+                commentReactionRepository.save(commentReaction);
+            return "redirect:/details/" + contentId;
+        }
+    }
+
+
+
+
+    //댓글 싫어요 요청
+    @PostMapping("/content/{contentId}/comments/dislike/{commentId}")
+    public String changeCommentDislikesCount(@PathVariable("contentId") Long contentId,
+                                          @PathVariable("commentId") Long commentId) {   //reactionId안들어옴..
+
+
+        Optional<ArrayList<CommentReaction>> commentReactionOptional = commentReactionRepository.findByCommentId(commentId);
+        CommentReaction findCommentReaction = new CommentReaction(null,null,null,null,null);
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+
+
+        commentReactionOptional.ifPresent(reactions -> {
+            Optional<CommentReaction> foundReaction =  reactions.stream()
+                    .filter(reaction -> reaction.getMemberId().equals(logined.getId()))
+                    .findFirst();
+
+            if (foundReaction.isPresent()) {
+                findCommentReaction.setId(foundReaction.get().getId());
+                findCommentReaction.setMemberId(foundReaction.get().getMemberId());
+                findCommentReaction.setCommentId(foundReaction.get().getCommentId());
+                findCommentReaction.setContentId(foundReaction.get().getContentId());
+                findCommentReaction.setFavor(foundReaction.get().getFavor());
+            }
+        });
+
+
+
+
+
+
+        if(findCommentReaction.getId() != null) {
+            //싫어요 취소
+            if (findCommentReaction.getFavor() == Favor.DISLIKE) {
+                findCommentReaction.setFavor(Favor.NEUTRAL);
+                findComment.get().setDislikesCount(findComment.get().getDislikesCount() - 1);
+            }
+            //싫어요
+            else {
+                //좋아요 -> 싫어요
+                if(findCommentReaction.getFavor() == Favor.LIKE) {
+                    //좋아요 - 1
+                    findComment.get().setLikesCount(findComment.get().getLikesCount() - 1);
+                }
+                findCommentReaction.setFavor(Favor.DISLIKE);
+                //싫어요 + 1
+                findComment.get().setDislikesCount(findComment.get().getDislikesCount() + 1);
+            }
+
+
+            //DB업데이트
+            commentReactionRepository.update(findCommentReaction);
+            commentRepository.update(findComment.get());
+            return "redirect:/details/" + contentId;
+        }
+        else{
+            //객체 생성
+            CommentReaction commentReaction = new CommentReaction(logined.getId(),commentId,Favor.DISLIKE,contentId);
+            Comment comment = findComment.get();
+            comment.setDislikesCount(comment.getDislikesCount() + 1);
+
+            commentRepository.update(comment);
+            commentReactionRepository.save(commentReaction);
+            return "redirect:/details/" + contentId;
+        }
+    }
 }

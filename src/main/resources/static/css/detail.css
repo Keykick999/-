@@ -86,20 +86,30 @@ textarea {
     border-radius: 2px;
 }
 
-button {
-    background-color: #065fd4;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 2px;
-    cursor: pointer;
+/* 좋아요/싫어요 버튼 스타일 */
+.button {
+    background-color: #f3f3f3;
+    color: #333;
+    /* 기존 스타일 유지 */
 }
 
-button:hover {
-    background-color: #0d4ea2;
+/* 좋아요 버튼 활성화 스타일 */
+.liked {
+    background-color: #ffcc4d; /* 좋아요를 나타내는 색 */
+    color: white;
 }
+
+/* 싫어요 버튼 활성화 스타일 */
+.disliked {
+    background-color: #666; /* 싫어요를 나타내는 색 */
+    color: white;
+}
+
+/* 좋아요/싫어요 버튼 호버 스타일 */
+.button:hover {
+    opacity: 0.7;
+}
+
 
 a {
     display: block;

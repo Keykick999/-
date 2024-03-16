@@ -13,13 +13,15 @@
             <legend>콘텐츠 정보</legend>
             <div class="form-row">
                 <label for="title">제목:</label>
-                <input type="text" id="title" name="title" />
+                <input type="text" id="title" name="title" required />
             </div>
             <div class="form-row">
                 <label for="substance">내용:</label>
-                <textarea id="substance" name="substance"></textarea>
+                <textarea id="substance" name="substance" required></textarea>
             </div>
-            <button type="submit" id="submitBtn">제출</button>
+            <div class="form-row button-row">
+                <button type="submit" id="submitBtn">제출</button>
+            </div>
         </fieldset>
     </form>
 </main>
